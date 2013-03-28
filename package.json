@@ -1,13 +1,14 @@
 {
-  "name": "xavier",
+  "name": "pinky",
   "version": "0.0.0",
-  "description": "Small, psychographed promises/a+ implementation from outta this world. Yo.",
+  "description": "Sweetly small promises/a+ implementation.",
   "main": "./lib/index.js",
   "devDependencies": {
     "LiveScript": "~1.1.1",
     "mocha": "~1.8.1",
     "es5-shim": "~2.0.5",
-    "browserify": "~2.4.3"
+    "browserify": "~2.4.3",
+    "promises-aplus-tests": "*"
   },
   "scripts": {
     "cc": "./node_modules/.bin/lsc -o lib -c src/*.ls",
@@ -27,17 +28,40 @@
   "calliope": {
     "output": "docs/api",
     "copyright": "© 2013 Quildreen \"Sorella\" Motta",
-    "packages": [{ "files": [ "src/*.ls" ] }]
+    "packages": [
+      {
+        "files": [
+          "src/*.ls"
+        ]
+      }
+    ]
   },
   "testling": {
     "files": "test/browser/suite.js",
     "preprocess": "npm run-script pretest-browser",
     "browsers": {
-      "ie": [8, 9, 10],
-      "firefox": [15, "nightly"],
-      "chrome": [21, 22, "canary"],
-      "opera": [10, 12, "next"],
-      "safari": [5.1]
+      "ie": [
+        8,
+        9,
+        10
+      ],
+      "firefox": [
+        15,
+        "nightly"
+      ],
+      "chrome": [
+        21,
+        22,
+        "canary"
+      ],
+      "opera": [
+        10,
+        12,
+        "next"
+      ],
+      "safari": [
+        5.1
+      ]
     },
     "harness": "mocha"
   }
