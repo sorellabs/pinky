@@ -33,6 +33,16 @@ Just grab it from NPM:
     $ npm install xavier
 
 
+### A note on performance
+
+The promises/a+ specification requires things to be asynchronous. To do that,
+Pinky uses `process.nextTick` in Node.js, and `setImmediate` in a DOM
+environment. However, `setImmediate` is a Microsoft thing, and it's unlikely to
+be implemented anywhere else, and in that case we fall back to the slow
+`setTimeout`. Thus, providing a fallback for `setImmediate` might speed things
+up a bit.
+
+
 ### Documentation
 
 A quick reference of the API can be built using [Calliope][]:
