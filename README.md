@@ -3,14 +3,14 @@
 Sweetly small promises/a+ implementation.
 
 
-### Platform support
+## Platform support
 
 Should work fine in ES3.
 
 [![browser support](http://ci.testling.com/killdream/pinky.png)](http://ci.testling.com/killdream/pinky)
 
 
-### Example
+## Example
 
 ```js
 var pinky = require('pinky')
@@ -26,14 +26,14 @@ eventual2.then( console.log.bind(console, 'ok:')
 ```
 
 
-### Installing
+## Installing
 
 Just grab it from NPM:
 
     $ npm install xavier
 
 
-### A note on performance
+## A note on performance
 
 The promises/a+ specification requires things to be asynchronous. To do that,
 Pinky uses `process.nextTick` in Node.js, and `setImmediate` in a DOM
@@ -43,7 +43,7 @@ be implemented anywhere else, and in that case we fall back to the slow
 up a bit.
 
 
-### Documentation
+## Documentation
 
 A quick reference of the API can be built using [Calliope][]:
 
@@ -51,19 +51,19 @@ A quick reference of the API can be built using [Calliope][]:
     $ calliope build
 
 
-### Tests
+## Tests
 
 You can run all tests using Mocha:
 
     $ npm test
 
 
-### Licence
+## Licence
 
 MIT/X11. ie.: do whatever you want.
 
 
-### Why? WHY?
+## Why? WHY?
 
 Most promise implementations I've seen plainly do way too much. OTOH Minimal
 promise implementations (like [PinkySwear][]) provide a terrible API, which
