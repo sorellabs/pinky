@@ -21,7 +21,7 @@ Promise = do
 
 describe 'Promises/A+ Tests' ->
   (require 'promises-aplus-tests').mocha do
-    fulfilled: (value) -> pinky!fulfill value
+    fulfilled: pinky
     rejected:  (value) -> pinky!reject value
     pending:           -> do
                           p = pinky!

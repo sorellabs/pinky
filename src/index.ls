@@ -147,15 +147,17 @@ pinky-promise = (a) ->
     pending.push (make-bindings fulfilled, failed, promise)
 
   # ---
-  if is-thenable a => return make-promise-from-thenable a
-  else             => return do
-                             pending = []
-
-                             then      : add-transition-state
-                             always    : (f) -> add-transition-state f, f
-                             otherwise : (f) -> add-transition-state void, f
-                             fulfill   : fulfill
-                             reject    : fail
+  return switch
+    | is-thenable a    => make-promise-from-thenable a
+    | arguments.length => pinky-promise!fulfill a
+    | otherwise        => do
+                          pending = []
+                          
+                          then      : add-transition-state
+                          always    : (f) -> add-transition-state f, f
+                          otherwise : (f) -> add-transition-state void, f
+                          fulfill   : fulfill
+                          reject    : fail
   # ---
 
   # Returns a new Promise that represents the eventual transformation
