@@ -72,7 +72,7 @@ describe 'Pinky Tests' ->
        p2 = p.otherwise s
        delay 100 -> do
                     expect p .to.become 'a'
-                    expect s.called .to.equal undefined
+                    expect s.called .to.equal void
                     done!
 
     o 'Should be called when the promise is rejected.' ->
