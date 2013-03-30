@@ -1,13 +1,18 @@
-{ Promise, resolve, reject } = require '../lib'
+pinky = require '../lib'
 
 describe 'Promises/A+ Tests' ->
   (require 'promises-aplus-tests').mocha do
-    fulfilled: (value) -> resolve value, new Promise
-    rejected:  (value) -> reject value, new Promise
+    fulfilled: (value) -> do
+                          p = pinky!
+                          p.fulfill value
+                          p
+    rejected:  (value) -> do
+                          p = pinky!
+                          p.reject value
+                          p
     pending:   -> do
-                  p = new Promise
+                  p = pinky!
                   promise: p
-                  fulfill: (-> resolve it, p)
-                  reject: (-> reject it, p)
+                  fulfill: p.fulfill
+                  reject:  p.reject
 
-    

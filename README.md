@@ -1,12 +1,11 @@
-# Xavier [![Build Status](https://travis-ci.org/killdream/xavier.png)](https://travis-ci.org/killdream/xavier)
+# Pinky [![Build Status](https://travis-ci.org/killdream/xavier.png)](https://travis-ci.org/killdream/xavier)
 
-Small, psychographed promises/a+ implementation from outta this world. Yo.
+Sweetly small promises/a+ implementation.
 
 
 ### Platform support
 
-This library assumes an ES5 environment, but can be easily supported in ES3
-platforms by the use of shims. Just include [es5-shim][] :3
+Should work fine in ES3.
 
 [![browser support](http://ci.testling.com/killdream/xavier.png)](http://ci.testling.com/killdream/xavier)
 
@@ -14,13 +13,13 @@ platforms by the use of shims. Just include [es5-shim][] :3
 ### Example
 
 ```js
-var promise = require('xavier')
+var pinky = require('pinky')
 
-var eventual = promise()
+var eventual = pinky()
 var eventual2 = eventual.then( function(a){ return a + 1 }
                              , function(a){ return a - 1 })
 
-resolve(10, eventual)
+eventual.fulfill(10)
 eventual2.then( console.log.bind(console, 'ok:')
               , console.log.bind(console, 'failed:'))
 // => ok: 11

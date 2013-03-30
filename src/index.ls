@@ -24,8 +24,34 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-### λ defer
+### -- Interfaces ------------------------------------------------------
+
+#### type Thenable a b
+# Something that might look like a Promise, but might not be quite a
+# pinky Promise. We can likely interoperate with those, however.
+#
+# :: { "then" :: (a -> c), (b -> d) -> Thenable c d }
+
+#### type Value a b
+# The type of values a promise function accepts.
+#
+# :: Thenable a b | a | b
+
+#### type Applicator
+# The type of things that can apply promises.
+#
+# :: Value, (a -> Value), (b -> Value), Promise a b -> ()
+
+### -- Helpers ---------------------------------------------------------
+
+#### λ defer
 # Defers the evaluation of a function to the next event loop.
+#
+# We currently support the Node.js platform and things that comply with
+# the DOM interfaces. `setImmediate` is the equivalent of
+# `process.nextTick` for IE, but unlikely to be implemented
+# everywhere. Community is shimming it away anyways so it might become
+# de-facto standard (the spec is madness though).
 #
 # :: Fun -> ()
 defer =
@@ -33,97 +59,129 @@ defer =
   | set-immediate? => set-immediate
   | otherwise      => (-> set-timeout it, 0)
 
-### type State
-# The various states a Promise can be at.
-#
-# :: Pending | Fulfilled | Rejected
-s-pending   = ['pending']
-s-fulfilled = ['fulfilled']
-s-rejected  = ['rejected']
+
+#### λ is-thenable
+# Checks if something matches the `Thenable` interface.
+# 
+# :: a -> Bool
+is-thenable = (a) -> if a => typeof a.then is 'function'
 
 
-### {} Promise a
-# The Promise object.
-#
-# :: { "state": State, "value": a, "pending": [Fun] }
-class Promise
-  ->
-    @state = s-pending
-    @value = null
-    @pending = []
-
-  #### λ then
-  # Adds a transformation to this promise's eventual value.
-  #
-  # :: Fun, Fun -> Promise a
-  then: (ok, failed) ->
-    p = new Promise
-    if @state is s-pending => bind-handler ok, failed, p, this
-    else                   => defer (~> apply-promise @value, ok, failed, p, this)
-    p
-
-
-### λ bind-handler
-# Creates a bound handler for handling the eventual value of a promise.
-#
-# :: Fun, Fun, Promise a, Promise a -> ()
-bind-handler = (ok, failed, promise, parent) ->
-  parent.pending.push (value) -> apply-promise value, ok, failed, promise, parent
-
-
-### λ transformers-for
-# Returns the transformers for applying a promise.
-#
-# :: Promise, Fun, Fun -> { "handler": Fun, "fallback": Fun }
-choose-function = (promise, ok, failed) ->
-  if promise.state is s-fulfilled => handler: ok, fallback: resolve
-  else                            => handler: failed, fallback: reject
-
-
-### λ is-promise
-# Checks if something is a promise.
+#### λ is-function
+# Checks if something belongs to the `Function` type.
 #
 # :: a -> Bool
-is-promise = (a) -> typeof a?.then is 'function'
+is-function = (a) -> typeof a is 'function'
+
+
+#### λ make-promise-from-thenable
+# Constructs a brand-new Pinky promise from a `Thenable` object.
+# 
+# :: Thenable a b -> Promise a b
+make-promise-from-thenable = (a) ->
+  p = pinky-promise!
+  a.then p.fulfill, p.reject
+  return p
+
+
+#### λ make-bindings
+# Constructs binding applicators for a promise.
+#
+# :: (a -> Value), (b -> Value), Promise a b -> Applicator, Value -> ()
+make-bindings = (fulfilled, failed, promise) -> (apply, value) ->
+  apply value, fulfilled, failed, promise
+
+#### λ to-fulfilled
+# Applies bindings for a fulfilled state.
+#
+# :: Applicator
+to-fulfilled = (value, fulfilled, _, promise) ->
+  apply-promise value, fulfilled, promise.fulfill, promise
+
+#### λ to-rejected
+# Applies bindings for a rejected state.
+#
+# :: Applicator
+to-rejected = (value, _, rejected, promise) ->
+  apply-promise value, rejected, promise.reject, promise
 
 ### λ apply-promise
-# Applies a promise.
+# Applies the state of a Promise.
 #
-# :: a, Fun, Fun, Promise, Promise -> ()
-apply-promise = (value, ok, failed, promise, parent) ->
-  f = choose-function parent, ok, failed
+# Since we have to wrap the thing in a try..catch block to get exception
+# handling in promises and stuff, the code that actually attempts to
+# apply a promise is moved to a separate function, so JITs can try to
+# optimise that instead and we pay less overhead for the whole thing.
+#
+# § 3.2.6 at http://promises-aplus.github.com/promises-spec/
+#
+# :: Value -> (a | b -> Value), (Value -> ()), Promise a b -> ()
+apply-promise = (value, handler, fallback, promise) ->
   try
-    if typeof f.handler is 'function'
-      result = f.handler value
-      if is-promise result => result.then (-> resolve it, promise), (-> reject it, promise)
-      else                 => resolve result, promise
-    else
-      f.fallback value, promise
+    attempt-application value, handler, fallback, promise
   catch e
-    reject e, promise
+    promise.reject e
 
-### λ transition
-# Transitions the promise to another state.
+# Moves this thing off the try..catch block so JITs can optimise it.
+attempt-application = (value, handler, fallback, promise) ->
+  if is-function handler
+    result = handler value
+    if is-thenable result => result.then promise.fulfill, promise.reject
+    else                  => promise.fulfill result
+  # The handler is just another regular JS value
+  else
+    fallback value
+
+
+
+### -- Core implementation ---------------------------------------------
+
+#### λ promise
+# Lifts a value into a Promise.
 #
-# :: State, a, Promise a -> Promise a
-transition = (state, value, promise) -> if promise.state is s-pending
-  promise.state = state
-  promise.value = value
-  defer -> for f in promise.pending => f value
-  promise
+# :: a -> Promise a b
+# :: Thenable a b -> Promise a b
+pinky-promise = (a) ->
+  # :: (a -> Value), (b -> Value), Promise a b -> ()
+  add-bindings = (fulfilled, failed, promise) ->
+    pending.push (make-bindings fulfilled, failed, promise)
 
-### λ resolve
-# Fulfills a promise.
-#
-# :: a, Promise a -> Promise a
-resolve = (value, promise) -> transition s-fulfilled, value, promise
+  # ---
+  if is-thenable a => return make-promise-from-thenable a
+  else             => return do
+                             pending = []
 
-### λ reject
-# Rejects a promise.
-#
-# :: a, Promise a -> Promise a
-reject = (value, promise) -> transition s-rejected, value, promise
+                             then:    add-transition-state
+                             fulfill: fulfill
+                             reject:  fail
+  # ---
+
+  # Returns a new Promise that represents the eventual transformation
+  # of the original promise's value through the given callbacks.
+  #
+  # § 3.2 at http://promises-aplus.github.com/promises-spec/
+  #
+  # :: (a -> Value), (b -> Value) -> Promise a b
+  function add-transition-state(fulfilled, failed)
+    p2 = pinky-promise!
+    add-bindings fulfilled, failed, p2
+    return p2
+
+  # :: Applicator, Value -> ()
+  function transition(state, value)
+    let xs = pending => defer !-> for f in xs => f state, value
+
+    # Since the promise ain't pending anymore, we can just apply the
+    # values immediately to any subsequent call to `then`.
+    add-bindings := (k, f, p) -> defer (-> (make-bindings k, f, p) state, value)
+    pending      := []
+    return void
+
+  # :: Value -> ()
+  function fulfill(a) => transition to-fulfilled, a
+  function fail(a)    => transition to-rejected, a
 
 
+
 ### -- Exports ---------------------------------------------------------
-module.exports = { Promise, resolve, reject }
+module.exports = pinky-promise
