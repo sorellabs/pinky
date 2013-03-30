@@ -151,9 +151,11 @@ pinky-promise = (a) ->
   else             => return do
                              pending = []
 
-                             then:    add-transition-state
-                             fulfill: fulfill
-                             reject:  fail
+                             then      : add-transition-state
+                             always    : (f) -> add-transition-state f, f
+                             otherwise : (f) -> add-transition-state void, f
+                             fulfill   : fulfill
+                             reject    : fail
   # ---
 
   # Returns a new Promise that represents the eventual transformation
