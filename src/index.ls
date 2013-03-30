@@ -177,9 +177,13 @@ pinky-promise = (a) ->
     pending      := []
     return void
 
-  # :: Value -> ()
-  function fulfill(a) => transition to-fulfilled, a
-  function fail(a)    => transition to-rejected, a
+  # :: Value -> Promise a b
+  function fulfill(a) => do
+                         transition to-fulfilled, a
+                         this
+  function fail(a)    => do
+                         transition to-rejected, a
+                         this
 
 
 
