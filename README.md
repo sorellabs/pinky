@@ -30,8 +30,15 @@ eventual2.then( console.log.bind(console, 'ok:')
 
 Just grab it from NPM:
 
-    $ npm install xavier
+    $ npm install pinky
+    
+    
+## Tests
 
+Tests only run on Node right now, so just:
+
+    $ npm test
+    
 
 ## A note on performance
 

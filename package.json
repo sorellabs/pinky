@@ -10,14 +10,14 @@
     "promises-aplus-tests": "*",
     "chai-as-promised": "~3.2.5",
     "chai": "~1.5.0",
-    "chai-interface": "~1.1.0",
-    "mocha-as-promised": "~1.2.1"
+    "mocha-as-promised": "~1.2.1",
+    "es5-shim": "~2.0.8"
   },
   "scripts": {
     "cc": "./node_modules/.bin/lsc -o lib -c src/*.ls",
     "test-cc": "./node_modules/.bin/lsc -o lib-test -c test/*.ls",
     "pretest": "npm run-script cc && npm run-script test-cc",
-    "test": "./node_modules/.bin/mocha lib-test/*.js",
+    "test": "./node_modules/.bin/mocha lib-test/node.js",
     "pretest-browser": "npm run-script pretest && ./node_modules/.bin/browserify -o test/browser/suite-bundle.js -e test/browser/suite.js",
     "prepublish": "npm run-script cc"
   },
