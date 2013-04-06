@@ -7,8 +7,6 @@ Sweetly small promises/a+ implementation.
 
 Should work fine in ES3.
 
-[![browser support](http://ci.testling.com/killdream/pinky.png)](http://ci.testling.com/killdream/pinky)
-
 
 ## Example
 
