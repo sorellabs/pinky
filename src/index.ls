@@ -55,8 +55,8 @@
 #
 # :: Fun -> ()
 defer =
-  | process?       => process.next-tick
   | set-immediate? => set-immediate
+  | process?       => process.next-tick
   | otherwise      => (-> set-timeout it, 0)
 
 
