@@ -1,4 +1,8 @@
-# Pinky [![Build Status](https://travis-ci.org/killdream/pinky.png)](https://travis-ci.org/killdream/pinky) ![Dependencies Status](https://david-dm.org/killdream/pinky.png)
+Pinky
+=====
+
+[![Build Status](https://travis-ci.org/killdream/pinky.png?branch=master)](https://travis-ci.org/killdream/pinky)
+![Dependencies Status](https://david-dm.org/killdream/pinky.png)
 
 Sweetly small promises/a+ implementation.
 
