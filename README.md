@@ -4,6 +4,8 @@ Pinky
 [![Build Status](https://travis-ci.org/killdream/pinky.png?branch=master)](https://travis-ci.org/killdream/pinky)
 ![Dependencies Status](https://david-dm.org/killdream/pinky.png)
 
+> **Note:** I'm not maintaining this library anymore, since Promises/A+ are broken for me. I recommend using [monadic promises](https://github.com/folktale/data.future) and [monad combinators](https://github.com/folktale/control.monads) instead.
+
 Sweetly small promises/a+ implementation.
 
 
