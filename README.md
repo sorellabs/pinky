@@ -1,8 +1,8 @@
 Pinky
 =====
 
-[![Build Status](https://travis-ci.org/killdream/pinky.png?branch=master)](https://travis-ci.org/killdream/pinky)
-![Dependencies Status](https://david-dm.org/killdream/pinky.png)
+[![Build Status](https://travis-ci.org/robotlolita/pinky.png?branch=master)](https://travis-ci.org/robotlolita/pinky)
+![Dependencies Status](https://david-dm.org/robotlolita/pinky.png)
 
 > **Note:** I'm not maintaining this library anymore, since Promises/A+ are broken for me. I recommend using [monadic promises](https://github.com/folktale/data.future) and [monad combinators](https://github.com/folktale/control.monads) instead.
 
@@ -86,7 +86,7 @@ btw, but I might revisit this in the future and try to optimise things.
 
 
 
-[Calliope]: https://github.com/killdream/calliope
+[Calliope]: https://github.com/robotlolita/calliope
 [es5-shim]: https://github.com/kriskowal/es5-shim
 [PinkySwear]: https://github.com/timjansen/PinkySwear.js
 [avow]: https://github.com/briancavalier/avow
