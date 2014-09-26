@@ -142,17 +142,30 @@ attempt-application = (value, handler, fallback, promise) ->
 # :: a -> Promise a b
 # :: Thenable a b -> Promise a b
 pinky-promise = (a) ->
+  # A list of operations we need to apply once the promise is resolved
+  pending = []
+
   # :: (a -> Value), (b -> Value), Promise a b -> ()
   add-bindings = (fulfilled, failed, promise) ->
     pending.push (make-bindings fulfilled, failed, promise)
+
+  # :: Applicator, Value -> ()
+  transition = (state, value) ->
+    let xs = pending => defer !-> for f in xs => f state, value
+
+    # Since the promise ain't pending anymore, we can just apply the
+    # values immediately to any subsequent call to `then`.
+    add-bindings := (k, f, p) -> defer (-> (make-bindings k, f, p) state, value)
+    transition   := ->
+    pending      := []
+    return void
+
 
   # ---
   return switch
     | is-thenable a    => make-promise-from-thenable a
     | arguments.length => pinky-promise!fulfill a
     | otherwise        => do
-                          pending = []
-                          
                           then      : add-transition-state
                           always    : (f) -> add-transition-state f, f
                           otherwise : (f) -> add-transition-state void, f
@@ -170,17 +183,6 @@ pinky-promise = (a) ->
     p2 = pinky-promise!
     add-bindings fulfilled, failed, p2
     return p2
-
-  # :: Applicator, Value -> ()
-  function transition(state, value)
-    let xs = pending => defer !-> for f in xs => f state, value
-
-    # Since the promise ain't pending anymore, we can just apply the
-    # values immediately to any subsequent call to `then`.
-    add-bindings := (k, f, p) -> defer (-> (make-bindings k, f, p) state, value)
-    transition   := ->
-    pending      := []
-    return void
 
   # :: Value -> Promise a b
   function fulfill(a) => do
