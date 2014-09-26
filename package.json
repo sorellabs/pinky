@@ -4,7 +4,7 @@
   "description": "Sweetly small promises/a+ implementation.",
   "main": "./lib/index.js",
   "devDependencies": {
-    "LiveScript": "~1.1.1",
+    "LiveScript": "~1.2.0",
     "mocha": "~1.8.1",
     "browserify": "~2.4.3",
     "promises-aplus-tests": "*",
