@@ -178,6 +178,7 @@ pinky-promise = (a) ->
     # Since the promise ain't pending anymore, we can just apply the
     # values immediately to any subsequent call to `then`.
     add-bindings := (k, f, p) -> defer (-> (make-bindings k, f, p) state, value)
+    transition   := ->
     pending      := []
     return void
 
